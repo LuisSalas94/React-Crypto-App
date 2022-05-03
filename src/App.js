@@ -1,25 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Coin from "./components/Coin";
+import "./App.css";
+import Navbar from "./components/Navbar";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [listOfCoins, setListOfCoins] = useState([]);
+
+	const [loading, setLoading] = useState(true);
+
+	const callCryptoAPI = async () => {
+		setLoading(true);
+		const url = "https://api.coinstats.app/public/v1/coins?skip=0&limit=90";
+		const resp = await fetch(url);
+		const data = await resp.json();
+		setListOfCoins(data.coins);
+		setLoading(false);
+	};
+
+	useEffect(() => {
+		callCryptoAPI();
+	}, []);
+
+	return (
+		<>
+			<Navbar
+				message="#100DaysOfCode: Crypto Price App"
+				listOfCoins={listOfCoins}
+			/>
+			<div className="container .container-style">
+				{loading ? (
+					<h1>Loading...</h1>
+				) : (
+					<>
+						<Coin listOfCoins={listOfCoins} />
+					</>
+				)}
+			</div>
+		</>
+	);
 }
 
 export default App;
